@@ -230,3 +230,42 @@ function deleteTask() {
         };
     }
 }
+
+function exportTasks() {
+    const transaction = db.transaction(['tasks'], 'readonly');
+    const objectStore = transaction.objectStore('tasks');
+    const request = objectStore.getAll();
+
+    request.onsuccess = function(event) {
+        const tasks = event.target.result;
+        const jsonData = JSON.stringify(tasks);
+        const blob = new Blob([jsonData], {type: 'application/json'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `tasks_backup_${new Date().toISOString()}.json`;
+        link.click();
+    };
+}
+
+function importTasks(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const tasks = JSON.parse(e.target.result);
+        const transaction = db.transaction(['tasks'], 'readwrite');
+        const objectStore = transaction.objectStore('tasks');
+
+        tasks.forEach(task => {
+            delete task.id; // 기존 ID 제거
+            objectStore.add(task);
+        });
+
+        transaction.oncomplete = function() {
+            loadTasks();
+            alert('백업 데이터 복원 완료');
+        };
+    };
+
+    reader.readAsText(file);
+}

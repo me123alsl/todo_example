@@ -1,0 +1,16 @@
+.card-list {
+    min-height: 100px;
+}
+
+.task-card {
+    cursor: move;
+    margin-bottom: 10px;
+}
+
+.card-header {
+    cursor: pointer;
+}
+
+.card-body.collapsed {
+    display: none;
+}

@@ -3,6 +3,15 @@ let tasks = [];
 let currentTaskId = null;
 let taskModal;
 
+// 마크다운 미리보기 업데이트 함수
+function updateMarkdownPreview() {
+    const markdown = document.getElementById('taskDescription').value;
+    const preview = document.getElementById('markdownPreview');
+    preview.innerHTML = marked.parse(markdown);
+}
+
+document.getElementById('taskDescription').addEventListener('input', updateMarkdownPreview);
+
 document.addEventListener('DOMContentLoaded', function() {
     taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
     initDB();
@@ -119,11 +128,13 @@ function renderTask(task) {
     card.innerHTML = `
         <div class="card-body">
             <h5 class="card-title">${task.title}</h5>
+            <div class="card-text">${marked.parse(task.description)}</div>
             <p class="card-text">요청자: ${task.requester}</p>
             <p class="card-text">우선순위: ${task.priority}</p>
         </div>
     `;
     document.querySelector(`#${task.status} .card-list`).appendChild(card);
+    updateMarkdownPreview();
 }
 
 function openModal(taskId) {
